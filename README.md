@@ -30,4 +30,4 @@ I have attempted to alleviate this by imposing bounds on accessible memory.
 ## Idiosyncratica:
 
  - Input is in numbers but output is in the default encoding
- - Programs must end with the `^` when called in a program
+ - Programs must end with the `^` when called using `\brainfuck`
