@@ -1,12 +1,18 @@
 \input brainfuck-io
-
 \catcode`@=11
 
-\def\MEM@MAX{200}
-\def\MEM@MIN{100}
-\def\MEM@START{140}
-\def\CELL@MAX{255}
-\def\CELL@MIN{0}
+\def\brainfuckmemoryexceded#1{\message{Uh oh... brainfuck memory exceeded, sorry :( Can you maybe write something a little less... memory-gobbly? Memory address \the#1 is too \ifnum\memptr<\MEM@MIN low (< \the\MEM@MIN)\else high (> \the\MEM@MAX)\fi.}}
+
+\newcount\MEM@MAX
+\MEM@MAX = 200
+\newcount\MEM@MIN
+\MEM@MIN = 100
+\newcount\MEM@START
+\MEM@START = 140
+\newcount\CELL@MAX
+\CELL@MAX = 255
+\newcount\CELL@MIN
+\CELL@MIN = 0
 
 \newcount\executionmode
 \executionmode=0% 0 = normal, 1 = scanning
@@ -58,17 +64,19 @@
 	\if#1<%
 		\ifnum\executionmode=0%
 			\advance\memptr by -1 %
-			% \ifnum\memptr < \MEM@MIN %
-			% 	\@ctrerr%
-			% \fi%
+			\ifnum\memptr < \MEM@MIN %
+				\brainfuckmemoryexceded{\memptr}%
+				\end%
+			\fi%
 		\fi%
 	\else%
 	\if#1>%
 		\ifnum\executionmode=0%
 			\advance \memptr by 1 %
-			% \ifnum\memptr > \MEM@MAX %
-			% 	\@ctrerr%
-			% \fi%
+			\ifnum\memptr > \MEM@MAX %
+				\brainfuckmemoryexceded{\memptr}%
+				\end%
+			\fi%
 		\fi%
 	\else%
 	\if#1[%
