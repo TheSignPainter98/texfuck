@@ -14,7 +14,7 @@ Alternatively, it may be included in a LaTeX document using:
 ```
 then calling `\brainfuck [program]^`.
 
-Example: `\brainfuck ++++++++[>++++++++<-]>+.` -> A
+Example: `\brainfuck ++++++++[>++++++++<-]>+.^` $\rightarrow$ A
 
 ## Problems
 
