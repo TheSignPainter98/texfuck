@@ -1,11 +1,3 @@
-\def\prompt#1{%
-	\begingroup
-	\catcode`\^^M=9 % ignore the end-of-line
-	\read 20 to #1%
-	\expandafter\endgroup
-	\expandafter\def\expandafter#1\expandafter{#1}%
-}
-
 \newlinechar=`\^^J%
 
 \def\promptprogram{%
