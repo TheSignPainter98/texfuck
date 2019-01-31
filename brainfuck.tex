@@ -22,7 +22,7 @@
 		\advance\tempval by 1 %
 	\repeat%
 	\count\tempval = 0 %
-	\message{Executing program `#1^'}%
+	\message{Executing program `#1'}%
 	\@execute#1^%
 }
 
@@ -105,14 +105,13 @@
 	\else%
 	\if#1.%
 		\ifnum\executionmode=0 %
-			% \message{#1 -> \symbol{#1}}%
-			\sanitiseOutput{\the\count\memptr}%
+			\char\the\count\memptr\relax%
 		\fi%
 	\else%
 	\if#1,%
 		\ifnum\executionmode=0%
 			\prompt\value@in%
-			\count\memptr = \sanitiseInput{\value@in}%
+			\count\memptr = \value@in%
 		\fi%
 	\else%
 	\fi\fi\fi\fi\fi\fi\fi\fi%
@@ -124,3 +123,5 @@
 }
 
 \let \brainfuck = \startexecution
+
+\endinput
