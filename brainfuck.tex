@@ -1,0 +1,126 @@
+\input brainfuck-io
+
+\catcode`@=11
+
+\def\MEM@MAX{200}
+\def\MEM@MIN{100}
+\def\MEM@START{140}
+\def\CELL@MAX{255}
+\def\CELL@MIN{0}
+
+\newcount\executionmode
+\executionmode=0% 0 = normal, 1 = scanning
+
+\newcount\progptr
+\newcount\memptr
+\def \startexecution#1^{%
+	\global\progptr=0%
+	\global\memptr=\MEM@START%
+	\tempval=\MEM@MIN
+	\loop\ifnum\tempval<\MEM@MAX%
+		\count\tempval = 0 %
+		\advance\tempval by 1 %
+	\repeat%
+	\count\tempval = 0 %
+	\message{Executing program `#1^'}%
+	\@execute#1^%
+}
+
+\newcount\stackptr
+\newcount\tempval
+\newcount\brackets
+\brackets=0
+\def \@execute#1#2^{%
+	\def\proghead{#1}%
+	\def\progtail{#2}%
+	% Operation
+	\if#1+%
+		\ifnum\executionmode=0%
+			%\bfplus%
+			\tempval=\count\memptr%
+			\advance\tempval by 1 %
+			\ifnum\tempval > \CELL@MAX%
+				\tempval=\CELL@MIN%
+			\fi%
+			\count\memptr=\tempval%
+		\fi%
+	\else%
+	\if#1-%
+		\ifnum\executionmode=0%
+			\tempval=\count\memptr%
+			\advance\tempval by -1 %
+			\ifnum\tempval < \CELL@MIN%
+				\tempval=\CELL@MAX%
+			\fi%
+			\count\memptr=\tempval%
+		\fi%
+	\else%
+	\if#1<%
+		\ifnum\executionmode=0%
+			\advance\memptr by -1 %
+			% \ifnum\memptr < \MEM@MIN %
+			% 	\@ctrerr%
+			% \fi%
+		\fi%
+	\else%
+	\if#1>%
+		\ifnum\executionmode=0%
+			\advance \memptr by 1 %
+			% \ifnum\memptr > \MEM@MAX %
+			% 	\@ctrerr%
+			% \fi%
+		\fi%
+	\else%
+	\if#1[%
+		\ifnum\executionmode=0%
+			\expandafter\xdef\csname stack@\the\stackptr\endcsname{\progtail}%
+		\fi%
+		\ifnum\count\memptr=0%
+			\executionmode=1%
+			\brackets=\stackptr%
+		\fi%
+		\global\advance \stackptr by 1 %
+	\else%
+	\if#1]%
+		\ifnum\executionmode=0%
+			\global\advance \stackptr by -1 %
+			\ifnum\count\memptr=0%
+				% Continue; do nothing
+			\else%
+				% Loop back
+				\ifnum\stackptr=\brackets
+					\expandafter\expandafter\let \expandafter\progtail \csname stack@\the\stackptr\endcsname%
+				\else%
+				\fi%
+				\global\advance\stackptr by 1 %
+			\fi%
+		\else%
+			% Glossing mode
+			\ifnum\stackptr=\brackets%
+				\executionmode=0%
+				\brackets=0
+			\fi%
+			\global\advance \stackptr by -1 %
+		\fi%
+	\else%
+	\if#1.%
+		\ifnum\executionmode=0 %
+			% \message{#1 -> \symbol{#1}}%
+			\sanitiseOutput{\the\count\memptr}%
+		\fi%
+	\else%
+	\if#1,%
+		\ifnum\executionmode=0%
+			\prompt\value@in%
+			\count\memptr = \sanitiseInput{\value@in}%
+		\fi%
+	\else%
+	\fi\fi\fi\fi\fi\fi\fi\fi%
+	\ifx\progtail\empty%
+		% Do nothing
+	\else%
+		\expandafter\@execute\progtail^%
+	\fi%
+}
+
+\let \brainfuck = \startexecution

@@ -1,0 +1,29 @@
+\def\sanitiseInput#1{
+	#1%
+}
+
+
+\def\sanitiseOutput#1{%
+	\char#1\relax%
+}
+
+\def\prompt#1{%
+	\begingroup
+	\catcode`\^^M=9 % ignore the end-of-line
+	\read 20 to #1%
+	\expandafter\endgroup
+	\expandafter\def\expandafter#1\expandafter{#1}%
+}
+
+\newlinechar=`\^^J%
+
+\def\promptprogram{%
+	\message{^^J^^JPlease type in your program or, `stop' to end.^^J}%
+	\prompt\program%
+	\def\endingsymbol{}%
+	\ifx\program\endingsymbol%
+	\else%
+		\expandafter\startexecution\program^%
+		\promptprogram%
+	\fi%
+}
